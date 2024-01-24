@@ -84,7 +84,9 @@ include_directories(${MLIR_INCLUDE_DIRS})
 link_directories(${LLVM_BUILD_LIBRARY_DIR})
 add_definitions(${LLVM_DEFINITIONS})
 
-add_executable(mlir_toy main.cpp)
+add_executable(mlir_toy main.cpp
+        src/toy_dialect.h)
 target_link_libraries(mlir_toy PUBLIC MLIRDialect)
 
+include_directories(src)
 
