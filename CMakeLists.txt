@@ -60,6 +60,8 @@ if (NOT DEFINED MLIR_DIR OR "${MLIR_DIR}" STREQUAL "MLIR_DIR-NOTFOUND" OR NOT EX
 endif()
 
 
+# following code from `https://github.com/llvm/llvm-project/blob/main/mlir/examples/standalone/CMakeLists.txt`
+
 find_package(MLIR REQUIRED CONFIG)
 message(STATUS "Using MLIRConfig.cmake in: ${MLIR_DIR}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -79,14 +81,16 @@ include(AddLLVM)
 include(AddMLIR)
 include(HandleLLVMOptions)
 
+set(STANDALONE_SOURCE_DIR ${PROJECT_SOURCE_DIR})
+set(STANDALONE_BINARY_DIR ${PROJECT_BINARY_DIR})
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
+include_directories(${STANDALONE_SOURCE_DIR}/include)
+include_directories(${STANDALONE_BINARY_DIR}/include)
 link_directories(${LLVM_BUILD_LIBRARY_DIR})
 add_definitions(${LLVM_DEFINITIONS})
 
-add_executable(mlir_toy main.cpp
-        src/toy_dialect.h)
-target_link_libraries(mlir_toy PUBLIC MLIRDialect)
-
 include_directories(src)
+
+
 
