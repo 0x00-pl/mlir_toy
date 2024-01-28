@@ -90,7 +90,7 @@ include_directories(${STANDALONE_BINARY_DIR}/include)
 link_directories(${LLVM_BUILD_LIBRARY_DIR})
 add_definitions(${LLVM_DEFINITIONS})
 
-include_directories(src)
+add_subdirectory(src)
 
 
 
