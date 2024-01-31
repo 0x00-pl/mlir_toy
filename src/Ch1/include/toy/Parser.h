@@ -476,7 +476,7 @@ private:
     auto curToken = lexer.getCurToken();
     llvm::errs() << "Parse error (" << lexer.getLastLocation().line << ", "
                  << lexer.getLastLocation().col << "): expected '" << expected
-                 << "' " << context << " but has Token " << curToken;
+                 << "' " << context << " but has Token: " << to_string(curToken);
     if (isprint(curToken))
       llvm::errs() << " '" << (char)curToken << "'";
     llvm::errs() << "\n";

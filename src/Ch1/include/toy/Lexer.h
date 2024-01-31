@@ -49,6 +49,38 @@ enum Token : int {
   tok_number = -6,
 };
 
+namespace {
+    [[maybe_unused]] std::string_view to_string(const Token &tok) {
+      switch (tok) {
+        case tok_semicolon:
+          return "tok_semicolon";
+        case tok_parenthese_open:
+          return "tok_parenthese_open";
+        case tok_parenthese_close:
+          return "tok_parenthese_close";
+        case tok_bracket_open:
+          return "tok_bracket_open";
+        case tok_bracket_close:
+          return "tok_bracket_close";
+        case tok_sbracket_open:
+          return "tok_sbracket_open";
+        case tok_sbracket_close:
+          return "tok_sbracket_close";
+        case tok_eof:
+          return "tok_eof";
+        case tok_return:
+          return "tok_return";
+        case tok_var:
+          return "tok_var";
+        case tok_def:
+          return "tok_def";
+        case tok_identifier:
+          return "tok_identifier";
+        case tok_number:
+          return "tok_number";
+      }
+    }
+}
 /// The Lexer is an abstract base class providing all the facilities that the
 /// Parser expects. It goes through the stream one token at a time and keeps
 /// track of the location in the file for debugging purposes.
