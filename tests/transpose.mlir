@@ -1,1 +1,10 @@
-%t_tensor = "toy.transpose"(%tensor) {inplace = true} : (tensor<2x3xf64>) -> tensor<3x2xf64> loc("example/file/path":12:1)
+def multiply_transpose(a, b) {
+    return transpose(a) * transpose(b);
+}
+
+def main(){
+    var a<2, 2> = [[1, 2], [3, 4]];
+    var b<2, 2> = [1, 2, 3, 4];
+    var c = multiply_transpose(a, b);
+    print(c);
+}
