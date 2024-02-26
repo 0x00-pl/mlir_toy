@@ -25,50 +25,65 @@ namespace {
 
 // RAII helper to manage increasing/decreasing the indentation as we traverse
 // the AST
-struct Indent {
-  Indent(int &level) : level(level) { ++level; }
-  ~Indent() { --level; }
-  int &level;
-};
+    struct Indent {
+        explicit Indent(int &level) : level(level) { ++level; }
+
+        ~Indent() { --level; }
+
+        int &level;
+    };
 
 /// Helper class that implement the AST tree traversal and print the nodes along
 /// the way. The only data member is the current indentation level.
-class ASTDumper {
-public:
-  void dump(ModuleAST *node);
+    class ASTDumper {
+    public:
+        void dump(ModuleAST *node);
 
-private:
-  void dump(const VarType &type);
-  void dump(VarDeclExprAST *varDecl);
-  void dump(ExprAST *expr);
-  void dump(ExprASTList *exprList);
-  void dump(NumberExprAST *num);
-  void dump(LiteralExprAST *node);
-  void dump(VariableExprAST *node);
-  void dump(ReturnExprAST *node);
-  void dump(BinaryExprAST *node);
-  void dump(CallExprAST *node);
-  void dump(PrintExprAST *node);
-  void dump(PrototypeAST *node);
-  void dump(FunctionAST *node);
+    private:
+        static void dump(const VarType &type);
 
-  // Actually print spaces matching the current indentation level
-  void indent() {
-    for (int i = 0; i < curIndent; i++)
-      llvm::errs() << "  ";
-  }
-  int curIndent = 0;
-};
+        void dump(VarDeclExprAST *varDecl);
+
+        void dump(ExprAST *expr);
+
+        void dump(ExprASTList *exprList);
+
+        void dump(NumberExprAST *num);
+
+        void dump(LiteralExprAST *node);
+
+        void dump(VariableExprAST *node);
+
+        void dump(ReturnExprAST *node);
+
+        void dump(BinaryExprAST *node);
+
+        void dump(CallExprAST *node);
+
+        void dump(PrintExprAST *node);
+
+        void dump(PrototypeAST *node);
+
+        void dump(FunctionAST *node);
+
+        // Actually print spaces matching the current indentation level
+        void indent() const {
+          for (int i = 0; i < curIndent; i++)
+            llvm::errs() << "  ";
+        }
+
+        int curIndent = 0;
+    };
 
 } // namespace
 
 /// Return a formatted string for the location of any node
-template <typename T>
+template<typename T>
 static std::string loc(T *node) {
   const auto &loc = node->loc();
   return (llvm::Twine("@") + *loc.file + ":" + llvm::Twine(loc.line) + ":" +
           llvm::Twine(loc.col))
-      .str();
+          .str();
 }
 
 // Helper Macro to bump the indentation level and print the leading spaces for
@@ -80,14 +95,14 @@ static std::string loc(T *node) {
 /// Dispatch to a generic expressions to the appropriate subclass using RTTI
 void ASTDumper::dump(ExprAST *expr) {
   llvm::TypeSwitch<ExprAST *>(expr)
-      .Case<BinaryExprAST, CallExprAST, LiteralExprAST, NumberExprAST,
-            PrintExprAST, ReturnExprAST, VarDeclExprAST, VariableExprAST>(
-          [&](auto *node) { this->dump(node); })
-      .Default([&](ExprAST *) {
-        // No match, fallback to a generic message
-        INDENT();
-        llvm::errs() << "<unknown Expr, kind " << expr->getKind() << ">\n";
-      });
+          .Case<BinaryExprAST, CallExprAST, LiteralExprAST, NumberExprAST,
+                  PrintExprAST, ReturnExprAST, VarDeclExprAST, VariableExprAST>(
+                  [&](auto *node) { this->dump(node); })
+          .Default([&](ExprAST *) {
+              // No match, fallback to a generic message
+              INDENT();
+              llvm::errs() << "<unknown Expr, kind " << expr->getKind() << ">\n";
+          });
 }
 
 /// A variable declaration is printing the variable name, the type, and then
@@ -104,7 +119,7 @@ void ASTDumper::dump(VarDeclExprAST *varDecl) {
 void ASTDumper::dump(ExprASTList *exprList) {
   INDENT();
   llvm::errs() << "Block {\n";
-  for (auto &expr : *exprList)
+  for (auto &expr: *exprList)
     dump(expr.get());
   indent();
   llvm::errs() << "} // Block\n";
@@ -179,7 +194,7 @@ void ASTDumper::dump(BinaryExprAST *node) {
 void ASTDumper::dump(CallExprAST *node) {
   INDENT();
   llvm::errs() << "Call '" << node->getCallee() << "' [ " << loc(node) << "\n";
-  for (auto &arg : node->getArgs())
+  for (auto &arg: node->getArgs())
     dump(arg.get());
   indent();
   llvm::errs() << "]\n";
@@ -225,13 +240,13 @@ void ASTDumper::dump(FunctionAST *node) {
 void ASTDumper::dump(ModuleAST *node) {
   INDENT();
   llvm::errs() << "Module:\n";
-  for (auto &f : *node)
+  for (auto &f: *node)
     dump(&f);
 }
 
 namespace toy {
 
 // Public API
-void dump(ModuleAST &module) { ASTDumper().dump(&module); }
+    void dump(ModuleAST &module) { ASTDumper().dump(&module); }
 
 } // namespace toy
