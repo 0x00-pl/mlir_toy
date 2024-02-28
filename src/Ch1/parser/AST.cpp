@@ -148,7 +148,7 @@ void printLitHelper(ExprAST *litOrNum) {
   llvm::interleaveComma(literal->getDims(), llvm::errs());
   llvm::errs() << ">";
 
-  // Now print the content, recursing on every element of the list
+  // Now print the content, recursively on every element of the list
   llvm::errs() << "[ ";
   llvm::interleaveComma(literal->getValues(), llvm::errs(),
                         [&](auto &elt) { printLitHelper(elt.get()); });
@@ -190,7 +190,7 @@ void ASTDumper::dump(BinaryExprAST *node) {
 }
 
 /// Print a call expression, first the callee name and the list of args by
-/// recursing into each individual argument.
+/// recursively into each individual argument.
 void ASTDumper::dump(CallExprAST *node) {
   INDENT();
   llvm::errs() << "Call '" << node->getCallee() << "' [ " << loc(node) << "\n";
