@@ -9,11 +9,13 @@ set(LLVM_BUILD_PATH "${LLVM_SRC_PATH}/build")
 set(MLIR_DIR "${LLVM_BUILD_PATH}/lib/cmake/mlir" CACHE PATH "")
 unset(LLVM_DIR CACHE)
 
-if (NOT DEFINED MLIR_DIR OR "${MLIR_DIR}" STREQUAL "MLIR_DIR-NOTFOUND" OR NOT EXISTS "${MLIR_DIR}")
-    message(WARNING "MLIR_DIR is not configured so we need build mlir at configure time."
-            "Set the cmake option MLIR_DIR for prebuilt MLIR, e.g.,\n"
-            "    cmake -DMLIR_DIR=/path/to/llvm-project/build/lib/cmake/mlir ..\n"
-    )
+if (FORCE_RECOMPILE OR NOT DEFINED MLIR_DIR OR "${MLIR_DIR}" STREQUAL "MLIR_DIR-NOTFOUND" OR NOT EXISTS "${MLIR_DIR}")
+    if (NOT FORCE_RECOMPILE)
+        message(WARNING "MLIR_DIR is not configured so we need build mlir at configure time."
+                "Set the cmake option MLIR_DIR for prebuilt MLIR, e.g.,\n"
+                "    cmake -DMLIR_DIR=/path/to/llvm-project/build/lib/cmake/mlir ..\n"
+        )
+    endif()
     if(NOT EXISTS "${LLVM_SRC_PATH}")
         message(FATAL_ERROR "LLVM_SRC_PATH=${LLVM_SRC_PATH} does not exist."
                 "Set the cmake option LLVM_SRC_PATH for LLVM, e.g.,\n"
@@ -30,7 +32,7 @@ if (NOT DEFINED MLIR_DIR OR "${MLIR_DIR}" STREQUAL "MLIR_DIR-NOTFOUND" OR NOT EX
                 -G "${CMAKE_GENERATOR}"
                 -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                -DCMAKE_BUILD_TYPE=Release
+                -DCMAKE_BUILD_TYPE=Debug
                 -DLLVM_ENABLE_PROJECTS=mlir
                 -DLLVM_TARGETS_TO_BUILD=X86\;NVPTX\;AMDGPU
                 -DLLVM_ENABLE_ASSERTIONS=ON
@@ -45,7 +47,7 @@ if (NOT DEFINED MLIR_DIR OR "${MLIR_DIR}" STREQUAL "MLIR_DIR-NOTFOUND" OR NOT EX
         endif()
 
         execute_process(
-                COMMAND ${CMAKE_COMMAND} --build ${LLVM_BUILD_PATH}
+                COMMAND ${CMAKE_COMMAND} --build ${LLVM_BUILD_PATH} -j4
                 RESULT_VARIABLE result
                 WORKING_DIRECTORY ${LLVM_SRC_PATH}
         )
